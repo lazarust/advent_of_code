@@ -1,46 +1,53 @@
 use std::fs;
 
-fn check_safe(nums: std::str::Split<'_, &str>) -> u32 {
-    let mut is_increasing = 0;
-    let mut is_decreasing = 0;
-    let mut previous_num = 0;
-    for num in nums {
-        let num2 = num.parse::<u32>().unwrap();
-        if previous_num == 0 {
-            previous_num = num2;
-        } else {
-            if num2 == previous_num {
-                return 0;
-            }
-            if num2 > previous_num && is_decreasing == 1 {
-                return 0;
-            }
-            if num2 < previous_num && is_increasing == 1 {
-                return 0;
-            }
-            if num2 > previous_num
-                && is_decreasing == 0
-                && num2 - previous_num >= 1
-                && num2 - previous_num <= 3
-            {
-                is_increasing = 1;
-                previous_num = num2;
-            } else if num2 < previous_num
-                && is_increasing == 0
-                && previous_num - num2 >= 1
-                && previous_num - num2 <= 3
-            {
-                is_decreasing = 1;
-                previous_num = num2;
-            } else {
-                return 0;
-            }
+fn check_safe(nums: std::str::Split<'_, &str>) -> i32 {
+    let nums_vec: Vec<i32> = nums.flat_map(|num| num.parse().ok()).collect();
+
+    for i in 0..nums_vec.len() {
+        let mut new_nums = nums_vec.clone();
+        new_nums.remove(i);
+        if check_single_sequence(&new_nums) {
+            return 1;
         }
     }
-    if is_increasing != 0 || is_decreasing != 0 {
-        return 1;
+
+    0
+}
+
+fn check_single_sequence(nums: &[i32]) -> bool {
+    if nums.is_empty() || nums.len() == 1 {
+        return true;
     }
-    return 0;
+
+    let mut is_increasing = false;
+    let mut is_decreasing = false;
+
+    for i in 1..nums.len() {
+        if (nums[i] - nums[i - 1]).abs() != 1
+            && (nums[i] - nums[i - 1]).abs() != 2
+            && (nums[i] - nums[i - 1]).abs() != 3
+        {
+            return false;
+        }
+
+        if nums[i] == nums[i - 1] {
+            return false;
+        }
+
+        if nums[i] > nums[i - 1] {
+            if is_decreasing {
+                return false;
+            }
+            is_increasing = true;
+        } else if nums[i] < nums[i - 1] {
+            if is_increasing {
+                return false;
+            }
+            is_decreasing = true;
+        }
+    }
+
+    is_increasing || is_decreasing
 }
 
 pub fn challenge() {
