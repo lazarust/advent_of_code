@@ -1,11 +1,9 @@
-mod day1;
+// mod day1;
+mod day2;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Call the day1 function
-    if let Err(e) = day1::challenge() {
-        eprintln!("Error in day1 function: {}", e);
-        return Err(e);
-    }
-
+    // Call the challenge function
+    // Replace with the given day
+    day2::challenge();
     Ok(())
 }
