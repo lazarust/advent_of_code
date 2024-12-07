@@ -17,6 +17,32 @@ fn check_rules(rules_to_apply: Vec<String>, page: &str) -> bool {
     true
 }
 
+fn apply_rules(rules_to_apply: Vec<String>, page: &str) -> String {
+    let mut page_nums: Vec<&str> = page.split(",").collect();
+    let mut made_changes = false;
+
+    for applying_rule in rules_to_apply.clone() {
+        let split_rule = applying_rule.split("|").collect::<Vec<&str>>();
+        let first_num = split_rule[0];
+        let later_num = split_rule[1];
+
+        if let Some(first_pos) = page_nums.iter().position(|&x| x == first_num) {
+            if let Some(later_pos) = page_nums.iter().position(|&x| x == later_num) {
+                if later_pos < first_pos {
+                    page_nums.swap(first_pos, later_pos);
+                    made_changes = true;
+                }
+            }
+        }
+    }
+
+    if made_changes && !check_rules(rules_to_apply.clone(), &page_nums.join(",")) {
+        apply_rules(rules_to_apply, &page_nums.join(","))
+    } else {
+        page_nums.join(",")
+    }
+}
+
 pub fn challenge() -> Result<(), Box<dyn std::error::Error>> {
     let contents =
         fs::read_to_string("../inputs/day5.txt").expect("Should have been able to read the file");
@@ -32,6 +58,7 @@ pub fn challenge() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let mut good_pages: Vec<String> = Vec::new();
+    let mut bad_pages: Vec<String> = Vec::new();
 
     for page in pages.split("\n") {
         let mut rules_to_apply: Vec<String> = Vec::new();
@@ -56,17 +83,14 @@ pub fn challenge() -> Result<(), Box<dyn std::error::Error>> {
         if check_rules(rules_to_apply.clone(), page) {
             good_pages.push(page.to_string())
         } else {
-            println!("Breaks Rules:");
-            for rule in rules_to_apply {
-                println!("{}", rule);
-            }
-            println!("Page: {}", page);
+            let adjusted_page = apply_rules(rules_to_apply, page);
+            bad_pages.push(adjusted_page)
         }
     }
 
     let mut running_sum = 0;
 
-    for page in good_pages {
+    for page in bad_pages {
         let page_nums = page.split(",").collect::<Vec<&str>>();
         let page_num_count = page_nums.len();
         let mid_num = page_nums[page_num_count / 2];
