@@ -67,10 +67,10 @@ pub fn challenge() -> Result<(), Box<dyn std::error::Error>> {
             _ => unreachable!(),
         }
 
-        if (current_position.0 < 0
+        if current_position.0 < 0
             || current_position.0 >= grid.len() as isize
             || current_position.1 < 0
-            || current_position.1 >= grid[current_position.0 as usize].len() as isize)
+            || current_position.1 >= grid[current_position.0 as usize].len() as isize
         {
             break;
         }
