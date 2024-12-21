@@ -13,3 +13,4 @@
 */rust/Cargo.lock
 
 .DS_Store
+.zed/
