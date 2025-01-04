@@ -1,8 +1,8 @@
 use std::fs;
 
-fn convert_string(contents: String) -> String {
+fn convert_string(contents: String) -> Vec<i32> {
     let mut num = 0;
-    let mut converted_string = "".to_owned();
+    let mut converted_vector: Vec<i32> = Vec::new();
     let mut is_free = false;
 
     for c in contents.chars() {
@@ -11,43 +11,54 @@ fn convert_string(contents: String) -> String {
         }
         if is_free == false {
             for _ in 0..c.to_digit(10).unwrap() {
-                converted_string.push_str(&num.to_string());
+                converted_vector.push(num as i32);
             }
             is_free = true;
             num += 1;
-            if num == 10 {
-                num = 0;
-            }
         } else {
             for _ in 0..c.to_digit(10).unwrap() {
-                converted_string.push_str(".");
+                converted_vector.push(-1);
             }
             is_free = false;
         }
     }
 
-    // println!("{}", converted_string);
-    converted_string
+    converted_vector
 }
 
-fn rearrange_string(converted_string: String) -> String {
-    let mut rearranged_string = converted_string.to_owned();
-    for c in converted_string.chars().rev() {
-        if rearranged_string.contains(".") == false {
-            break;
+fn rearrange_string(converted_vector: Vec<i32>) -> Vec<i32> {
+    let mut rearranged_vector = converted_vector.clone();
+    let mut pos = 0;
+
+    for i in (0..rearranged_vector.len()).rev() {
+        if rearranged_vector[i] != -1 {
+            while pos < rearranged_vector.len() && rearranged_vector[pos] != -1 {
+                pos += 1;
+            }
+            if pos < rearranged_vector.len() {
+                rearranged_vector.swap(i, pos);
+                rearranged_vector.pop();
+                pos += 1;
+            } else {
+                break;
+            }
         }
-        rearranged_string = rearranged_string.replacen(".", &c.to_string(), 1);
-        rearranged_string.pop();
     }
-    // println!("{}", rearranged_string);
-    rearranged_string
+
+    rearranged_vector.truncate(pos);
+    rearranged_vector
 }
 
-fn calculate_checksum(rearranged_string: String) {
+fn calculate_checksum(rearranged_vector: Vec<i32>) {
     let mut checksum = 0 as u64;
+    let mut count_i = 0;
 
-    for (index, c) in rearranged_string.char_indices() {
-        checksum += c.to_digit(10).unwrap() as u64 * index as u64
+    for (index, &c) in rearranged_vector.iter().enumerate() {
+        if c != -1 {
+            checksum += c as u64 * (index as u64 - count_i);
+        } else {
+            count_i += 1
+        }
     }
 
     println!("{}", checksum);
@@ -57,8 +68,7 @@ pub fn challenge() {
     let contents =
         fs::read_to_string("../inputs/day9.txt").expect("Should have been able to read the file");
 
-    let converted_string = convert_string(contents);
-    let rearranged_string = rearrange_string(converted_string);
-
-    calculate_checksum(rearranged_string);
+    let converted_vector = convert_string(contents);
+    let rearranged_vector = rearrange_string(converted_vector);
+    calculate_checksum(rearranged_vector);
 }
