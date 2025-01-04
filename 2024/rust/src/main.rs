@@ -5,11 +5,12 @@
 // mod day6;
 // mod day7;
 // mod day8;
-mod day9;
+// mod day9;
+mod day10;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Call the challenge function
     // Replace with the given day
-    let _ = day9::challenge();
+    let _ = day10::challenge();
     Ok(())
 }
