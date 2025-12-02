@@ -11,7 +11,8 @@ def main() -> None:
 
     datas = data.replace("R", "").replace("L", "-").strip().split("\n")
 
-    prev_num = temp_num = 50
+    temp_num = 50
+    inc_count = False
     count = 0
     for num in datas:
         float_num = float(num)
@@ -27,21 +28,24 @@ def main() -> None:
         temp_num += float_num
         if temp_num < 0:
             temp_num += 100
-            if prev_num != 0:
+            if inc_count:
                 count += 1
         elif temp_num > 100:
             temp_num -= 100
-            if prev_num != 0:
+            if inc_count:
                 count += 1
 
         if temp_num == 0:
-            if prev_num != 0:
+            if inc_count:
                 count += 1
+            inc_count = False
         elif temp_num == 100:
             temp_num = 0
-            if prev_num != 0:
+            if inc_count:
                 count += 1
-        prev_num = temp_num
+            inc_count = True
+        else:
+            inc_count = True
 
     print(count)
 
