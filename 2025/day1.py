@@ -6,11 +6,12 @@
 
 def main() -> None:
     with open("./inputs/day1.txt") as f:
+        # with open("./inputs/test_day1.txt") as f:
         data = f.read()
 
     datas = data.replace("R", "").replace("L", "-").strip().split("\n")
 
-    temp_num = 50
+    prev_num = temp_num = 50
     count = 0
     for num in datas:
         float_num = float(num)
@@ -21,15 +22,26 @@ def main() -> None:
                 float_num += hundreds
             else:
                 float_num -= hundreds
+            count += hundreds / 100
 
         temp_num += float_num
         if temp_num < 0:
             temp_num += 100
-        elif temp_num >= 100:
+            if prev_num != 0:
+                count += 1
+        elif temp_num > 100:
             temp_num -= 100
+            if prev_num != 0:
+                count += 1
 
         if temp_num == 0:
-            count += 1
+            if prev_num != 0:
+                count += 1
+        elif temp_num == 100:
+            temp_num = 0
+            if prev_num != 0:
+                count += 1
+        prev_num = temp_num
 
     print(count)
 
