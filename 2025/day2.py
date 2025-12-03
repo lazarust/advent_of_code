@@ -18,12 +18,16 @@ def main() -> None:
         higher_bound = int(split_range[1])
         for num in range(lower_bound, higher_bound + 1):
             str_num = str(num)
-            if len(str_num) % 2 != 0:
-                continue
-            first_half = str_num[: (len(str_num) // 2)]
-            second_half = str_num[(len(str_num) // 2) :]
-            if first_half == second_half:
-                running_sum += num
+            running_str = ""
+            hash_map = {}
+            for char in str_num:
+                running_str += char
+                hash_map[running_str] = str_num.count(running_str)
+
+            for key, value in hash_map.items():
+                if value >= 2 and value == len(str_num) / len(key):
+                    running_sum += num
+                    break
 
     print(f"Answer: {running_sum}")
 
