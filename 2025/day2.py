@@ -20,12 +20,12 @@ def main() -> None:
             str_num = str(num)
             running_str = ""
             hash_map = {}
-            for char in str_num:
+            for char in str_num[: len(str_num) // 2]:
                 running_str += char
                 hash_map[running_str] = str_num.count(running_str)
 
-            for key, value in hash_map.items():
-                if value >= 2 and value == len(str_num) / len(key):
+            for key, value in hash_map.values():
+                if value == len(str_num) / len(key):
                     running_sum += num
                     break
 
