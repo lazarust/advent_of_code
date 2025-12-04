@@ -4,14 +4,8 @@
 # ///
 
 
-def main() -> None:
-    # with open("./inputs/test_day4.txt") as f:
-    with open("./inputs/day4.txt") as f:
-        raw_data = f.read().strip()
-
-    rows = raw_data.split("\n")
-
-    count = 0
+def remove_rolls(rows):
+    to_remove = []
     for i, row in enumerate(rows):
         for j, pos in enumerate(row):
             if pos == "@":
@@ -40,9 +34,30 @@ def main() -> None:
                 )
 
                 if sum < 4:
-                    count += 1
+                    to_remove.append((i, j))
 
-    print(count)
+    return to_remove
+
+
+def main() -> None:
+    # with open("./inputs/test_day4.txt") as f:
+    with open("./inputs/day4.txt") as f:
+        raw_data = f.read().strip()
+
+    rows = raw_data.split("\n")
+
+    count_removal = 0
+    to_remove = remove_rolls(rows)
+    count_removal += len(to_remove)
+
+    while len(to_remove) > 0:
+        for i, j in to_remove:
+            temp_row = rows[i]
+            rows[i] = temp_row[:j] + "." + temp_row[j + 1 :]
+        to_remove = remove_rolls(rows)
+        count_removal += len(to_remove)
+
+    print(count_removal)
 
 
 if __name__ == "__main__":
