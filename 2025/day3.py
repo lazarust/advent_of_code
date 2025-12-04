@@ -13,18 +13,15 @@ def main() -> None:
 
     running_sum = 0
     for bank in banks:
-        first_max = 0
-        second_max = 0
-        for i, char in enumerate(bank):
-            voltage = int(char)
-            if voltage > first_max and i < len(bank) - 1:
-                first_max = voltage
-                second_max = 0
-            elif voltage > second_max:
-                second_max = voltage
+        running_str = ""
+        pos = 0
+        for i in range(12):
+            remaining_needed = 12 - i - 1
+            max_digit = max(bank[pos : len(bank) - remaining_needed])
+            running_str += max_digit
+            pos = bank.index(max_digit, pos) + 1
 
-        num_to_add = int(str(first_max) + str(second_max))
-        running_sum += num_to_add
+        running_sum += int(running_str)
 
     print(f"Answer: {running_sum}")
 
