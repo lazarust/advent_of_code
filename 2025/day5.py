@@ -5,8 +5,8 @@
 
 
 def main() -> None:
-    # with open("./inputs/test_day5.txt") as f:
-    with open("./inputs/day5.txt") as f:
+    with open("./inputs/test_day5.txt") as f:
+        # with open("./inputs/day5.txt") as f:
         raw_data = f.read().strip()
 
     split_data = raw_data.split("\n\n")
@@ -33,12 +33,8 @@ def main() -> None:
                 overlaps.append((start, end))
 
     count = 0
-
-    for ingredient in ingredients:
-        int_ingredient = int(ingredient)
-        for start, end in overlaps:
-            if start <= int_ingredient and int_ingredient <= end:
-                count += 1
+    for start, end in overlaps:
+        count += len(range(start, end + 1))
 
     print(count)
 
