@@ -5,8 +5,8 @@
 
 
 def main() -> None:
-    with open("./inputs/test_day5.txt") as f:
-        # with open("./inputs/day5.txt") as f:
+    # with open("./inputs/test_day5.txt") as f:
+    with open("./inputs/day5.txt") as f:
         raw_data = f.read().strip()
 
     split_data = raw_data.split("\n\n")
