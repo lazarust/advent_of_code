@@ -11,7 +11,6 @@ def main() -> None:
 
     split_data = raw_data.split("\n\n")
     ranges = split_data[0].splitlines()
-    ingredients = split_data[1].splitlines()
 
     list_range = []
     for range_ids in ranges:
