@@ -3,27 +3,36 @@
 # dependencies = []
 # ///
 
+import sys
+
 
 def main() -> None:
-    # with open("./inputs/test_day7.txt") as f:
-    with open("./inputs/day7.txt") as f:
+    use_test = "test" in sys.argv
+    filename = "./inputs/test_day7.txt" if use_test else "./inputs/day7.txt"
+
+    with open(filename) as f:
         raw_data = f.read().strip()
 
     rows = raw_data.splitlines()
     first_row = rows[0]
-
-    first_row.split()
-    column_with_lazer = set([first_row.find("S")])
-    split_count = 0
+    start_col = first_row.find("S")
+    path_counts = {start_col: 1}
     for row in rows[1:]:
-        for lazer_loc in set(column_with_lazer):
-            if row[lazer_loc] == "^":
-                column_with_lazer.add(lazer_loc - 1)
-                column_with_lazer.add(lazer_loc + 1)
-                column_with_lazer.remove(lazer_loc)
-                split_count += 1
+        if "^" not in row:
+            continue
 
-    print(split_count)
+        new_counts = {}
+
+        for col, count in path_counts.items():
+            if row[col] == "^":
+                new_counts[col - 1] = new_counts.get(col - 1, 0) + count
+                new_counts[col + 1] = new_counts.get(col + 1, 0) + count
+            else:
+                new_counts[col] = new_counts.get(col, 0) + count
+
+        path_counts = new_counts
+
+    print(sum(path_counts.values()))
 
 
 if __name__ == "__main__":
