@@ -35,7 +35,8 @@ def main() -> None:
     parent = {i: i for i in range(len(coordinates))}
     size = {i: 1 for i in range(len(coordinates))}
 
-    for dist, i, j in pairs[:1000]:
+    last_i, last_j = 0, 0
+    for dist, i, j in pairs:
         root_i = i
         while parent[root_i] != root_i:
             root_i = parent[root_i]
@@ -55,11 +56,9 @@ def main() -> None:
                 root_i, root_j = root_j, root_i
             parent[root_j] = root_i
             size[root_i] += size[root_j]
+            last_i, last_j = i, j
 
-    circuit_sizes = [size[i] for i in range(len(coordinates)) if parent[i] == i]
-    circuit_sizes.sort(reverse=True)
-
-    result = circuit_sizes[0] * circuit_sizes[1] * circuit_sizes[2]
+    result = coordinates[last_i][0] * coordinates[last_j][0]
     print(result)
 
 
