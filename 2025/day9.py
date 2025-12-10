@@ -1,9 +1,12 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = []
+# dependencies = ["shapely"]
 # ///
 
 import sys
+
+from shapely import box
+from shapely.geometry import Polygon
 
 
 def main() -> None:
@@ -16,19 +19,19 @@ def main() -> None:
     rows = raw_data.splitlines()
 
     cords = []
-
     for row in rows:
         split_row = row.split(",")
         cords.append((int(split_row[0]), int(split_row[1])))
 
-    max_area = 0
-    for i, cord in enumerate(cords):
-        for cord2 in cords[i:]:
-            y = abs(cord[0] - cord2[0] + 1)
-            x = abs(cord[1] - cord2[1] + 1)
+    poly = Polygon(cords)
 
-            if x * y > max_area:
-                max_area = x * y
+    max_area = 0
+    for i, (x1, y1) in enumerate(cords):
+        for (x2, y2) in cords[:i]:
+            rect = box(min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2))
+            if poly.contains(rect):
+                area = (abs(x2 - x1) + 1) * (abs(y2 - y1) + 1)
+                max_area = max(max_area, area)
 
     print(max_area)
 
