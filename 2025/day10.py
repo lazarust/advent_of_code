@@ -1,9 +1,14 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = []
+# dependencies = [
+#     "scipy",
+# ]
 # ///
 
 import sys
+
+import numpy as np
+from scipy.optimize import Bounds, LinearConstraint, milp
 
 
 def main() -> None:
@@ -18,31 +23,40 @@ def main() -> None:
     running_sum = 0
     for row in rows:
         split_row = row.split("]")
-        lights = split_row[0]
         rest = split_row[1].split("{")
         buttons = rest[0].strip().split(" ")
-        target_lights = lights.replace("[", "")
-        initial_lights = "." * len(target_lights)
 
-        queue = [(initial_lights, 0, 0)]
+        joltage_str = rest[1].replace("}", "").strip()
+        target_joltage_levels = tuple(int(x) for x in joltage_str.split(","))
 
-        while queue:
-            lights_state, num_presses, start_loc = queue.pop(0)
-            for i in range(start_loc, len(buttons)):
-                test_lights = list(lights_state)
-                flips = buttons[i].replace("(", "").replace(")", "").split(",")
-                for flip in flips:
-                    int_flip = int(flip)
-                    test_lights[int_flip] = "#" if test_lights[int_flip] == "." else "."
+        parsed_buttons = []
+        for b in buttons:
+            indices = tuple(
+                int(x) for x in b.replace("(", "").replace(")", "").split(",")
+            )
+            parsed_buttons.append(indices)
 
-                lights = "".join(test_lights)
+        num_buttons = len(parsed_buttons)
+        num_counters = len(target_joltage_levels)
 
-                if lights == target_lights:
-                    running_sum += num_presses + 1
-                    queue = None
-                    break
+        zeros = np.zeros((num_counters, num_buttons))
+        for i, button_indices in enumerate(parsed_buttons):
+            for j in button_indices:
+                zeros[j][i] = 1
 
-                queue.append((lights, num_presses + 1, i + 1))
+        c = np.ones(num_buttons)
+
+        target_array = np.array(target_joltage_levels, dtype=float)
+        constraints = LinearConstraint(zeros, target_array, target_array)
+
+        bounds = Bounds(lb=0, ub=np.inf)
+        integrality = np.ones(num_buttons)
+        result = milp(
+            c, constraints=constraints, bounds=bounds, integrality=integrality
+        )
+
+        if result.success:
+            running_sum += int(round(result.fun))
 
     print(running_sum)
 
