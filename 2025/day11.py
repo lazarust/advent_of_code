@@ -20,13 +20,16 @@ def main() -> None:
         maps[split_row[0]] = split_row[1].strip().split(" ")
 
     count = 0
-    locations = maps["you"]
-    for loc in locations:
-        new_locs = maps[loc]
-        if new_locs != ["out"]:
-            locations.extend(new_locs)
+    paths_to_explore = [(loc, ["svr", loc]) for loc in maps["svr"]]
+
+    for current_loc, path in paths_to_explore:
+        next_locs = maps[current_loc]
+        if next_locs == ["out"]:
+            if "dac" in path and "fft" in path:
+                count += 1
         else:
-            count += 1
+            for next_loc in next_locs:
+                paths_to_explore.append((next_loc, path + [next_loc]))
 
     print(count)
 
